@@ -15,6 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { deleteFoodItem, getFoodItems } from "../storage/foodStorage";
 
+import { getExpiryStatus } from "../utils/expiryUtils";
+
 // Food category icons
 const categoryIcons = {
   Fruits: "🍎",
@@ -36,10 +38,34 @@ const categories = [
   "Other",
 ];
 
+// Colors for each expiry status
+const statusColors = {
+  Fresh: {
+    background: "#E3F3E5",
+    text: "#286B40",
+  },
+  "Expiring Soon": {
+    background: "#FFF1D6",
+    text: "#A66A00",
+  },
+  "Expires Today": {
+    background: "#FFE7CC",
+    text: "#B65F00",
+  },
+  Expired: {
+    background: "#FDE8E8",
+    text: "#B42318",
+  },
+  Unknown: {
+    background: "#ECECEC",
+    text: "#666666",
+  },
+};
+
 export default function InventoryScreen() {
   const router = useRouter();
 
-  // State variables
+  // Inventory states
   const [foodItems, setFoodItems] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -51,7 +77,7 @@ export default function InventoryScreen() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Load saved food items when screen is focused
+  // Reload items when returning to Inventory
   useFocusEffect(
     useCallback(() => {
       let active = true;
@@ -87,7 +113,7 @@ export default function InventoryScreen() {
     }, []),
   );
 
-  // Filter by name and category
+  // Search and category filtering
   const filteredItems = foodItems.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
@@ -99,7 +125,7 @@ export default function InventoryScreen() {
     return matchesSearch && matchesCategory;
   });
 
-  // Format expiry date
+  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "Not specified";
 
@@ -116,7 +142,7 @@ export default function InventoryScreen() {
     });
   };
 
-  // Open confirmation popup
+  // Open delete confirmation popup
   const handleDeletePress = (item) => {
     setSelectedFood(item);
     setDeleteModalVisible(true);
@@ -130,7 +156,7 @@ export default function InventoryScreen() {
     setSelectedFood(null);
   };
 
-  // Confirm and delete food item
+  // Delete food from AsyncStorage
   const handleConfirmDelete = async () => {
     if (!selectedFood || deleting) return;
 
@@ -138,13 +164,9 @@ export default function InventoryScreen() {
       setDeleting(true);
       setError("");
 
-      // Delete from AsyncStorage
       const updatedItems = await deleteFoodItem(selectedFood.id);
 
-      // Update inventory immediately
       setFoodItems(updatedItems);
-
-      // Close confirmation popup
       setDeleteModalVisible(false);
       setSelectedFood(null);
     } catch (err) {
@@ -168,7 +190,7 @@ export default function InventoryScreen() {
           </Text>
         </View>
 
-        {/* Add Food Button */}
+        {/* Add New Food Button */}
         <Pressable
           style={styles.addButton}
           onPress={() => router.push("/add-food")}
@@ -237,54 +259,71 @@ export default function InventoryScreen() {
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : filteredItems.length > 0 ? (
-          // Display food items
-          filteredItems.map((item) => (
-            <View key={item.id} style={styles.foodCard}>
-              {/* Food Icon */}
-              <View style={styles.foodIcon}>
-                <Text style={styles.foodEmoji}>
-                  {categoryIcons[item.category] || "🥗"}
-                </Text>
+          // Display saved food items
+          filteredItems.map((item) => {
+            const status = getExpiryStatus(item.expiryDate);
+            const colors = statusColors[status] || statusColors.Unknown;
+
+            return (
+              <View key={item.id} style={styles.foodCard}>
+                {/* Food Icon */}
+                <View style={styles.foodIcon}>
+                  <Text style={styles.foodEmoji}>
+                    {categoryIcons[item.category] || "🥗"}
+                  </Text>
+                </View>
+
+                {/* Food Details */}
+                <View style={styles.foodDetails}>
+                  <Text style={styles.foodName}>{item.name}</Text>
+
+                  <Text style={styles.foodCategory}>{item.category}</Text>
+
+                  <Text style={styles.foodInfo}>Quantity: {item.quantity}</Text>
+
+                  <Text style={styles.expiryText}>
+                    Expiry: {formatDate(item.expiryDate)}
+                  </Text>
+
+                  {/* Expiry Status Badge */}
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: colors.background },
+                    ]}
+                  >
+                    <Text style={[styles.statusText, { color: colors.text }]}>
+                      {status}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.actionContainer}>
+                  {/* Edit Button */}
+                  <Pressable
+                    style={styles.editButton}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/edit-food",
+                        params: { id: item.id },
+                      })
+                    }
+                  >
+                    <Text style={styles.editButtonText}>✏️ Edit</Text>
+                  </Pressable>
+
+                  {/* Delete Button */}
+                  <Pressable
+                    style={styles.deleteButton}
+                    onPress={() => handleDeletePress(item)}
+                  >
+                    <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
+                  </Pressable>
+                </View>
               </View>
-
-              {/* Food Details */}
-              <View style={styles.foodDetails}>
-                <Text style={styles.foodName}>{item.name}</Text>
-
-                <Text style={styles.foodCategory}>{item.category}</Text>
-
-                <Text style={styles.foodInfo}>Quantity: {item.quantity}</Text>
-
-                <Text style={styles.expiryText}>
-                  Expiry: {formatDate(item.expiryDate)}
-                </Text>
-              </View>
-
-              {/* Action Buttons */}
-              <View style={styles.actionContainer}>
-                {/* Edit Button */}
-                <Pressable
-                  style={styles.editButton}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/edit-food",
-                      params: { id: item.id },
-                    })
-                  }
-                >
-                  <Text style={styles.editButtonText}>✏️ Edit</Text>
-                </Pressable>
-
-                {/* Delete Button */}
-                <Pressable
-                  style={styles.deleteButton}
-                  onPress={() => handleDeletePress(item)}
-                >
-                  <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
-                </Pressable>
-              </View>
-            </View>
-          ))
+            );
+          })
         ) : (
           // Empty State
           <View style={styles.emptyCard}>
@@ -328,7 +367,7 @@ export default function InventoryScreen() {
             </Text>
 
             <View style={styles.modalActions}>
-              {/* Cancel */}
+              {/* Cancel Button */}
               <Pressable
                 style={styles.cancelButton}
                 onPress={handleCancelDelete}
@@ -337,7 +376,7 @@ export default function InventoryScreen() {
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </Pressable>
 
-              {/* Confirm Delete */}
+              {/* Confirm Delete Button */}
               <Pressable
                 style={[
                   styles.confirmDeleteButton,
@@ -517,6 +556,20 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 
+  // Expiry status badge
+  statusBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+
+  statusText: {
+    fontSize: 11,
+    fontWeight: "bold",
+  },
+
   actionContainer: {
     flexDirection: "column",
     gap: 8,
@@ -586,7 +639,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  // Confirmation Modal Styles
+  // Delete confirmation modal
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
