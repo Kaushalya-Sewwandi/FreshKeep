@@ -1,7 +1,7 @@
-import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,9 +9,11 @@ import {
   TextInput,
   View,
 } from "react-native";
+
+import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { getFoodItems } from "../storage/foodStorage";
+import { deleteFoodItem, getFoodItems } from "../storage/foodStorage";
 
 // Food category icons
 const categoryIcons = {
@@ -23,6 +25,7 @@ const categoryIcons = {
   Other: "🥗",
 };
 
+// Available categories
 const categories = [
   "All",
   "Fruits",
@@ -43,7 +46,12 @@ export default function InventoryScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Load saved food items whenever Inventory is focused
+  // Delete confirmation states
+  const [selectedFood, setSelectedFood] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Load saved food items when screen is focused
   useFocusEffect(
     useCallback(() => {
       let active = true;
@@ -79,7 +87,7 @@ export default function InventoryScreen() {
     }, []),
   );
 
-  // Search and category filtering
+  // Filter by name and category
   const filteredItems = foodItems.filter((item) => {
     const matchesSearch = item.name
       .toLowerCase()
@@ -91,7 +99,7 @@ export default function InventoryScreen() {
     return matchesSearch && matchesCategory;
   });
 
-  // Display expiry date
+  // Format expiry date
   const formatDate = (dateString) => {
     if (!dateString) return "Not specified";
 
@@ -108,12 +116,53 @@ export default function InventoryScreen() {
     });
   };
 
+  // Open confirmation popup
+  const handleDeletePress = (item) => {
+    setSelectedFood(item);
+    setDeleteModalVisible(true);
+  };
+
+  // Cancel deletion
+  const handleCancelDelete = () => {
+    if (deleting) return;
+
+    setDeleteModalVisible(false);
+    setSelectedFood(null);
+  };
+
+  // Confirm and delete food item
+  const handleConfirmDelete = async () => {
+    if (!selectedFood || deleting) return;
+
+    try {
+      setDeleting(true);
+      setError("");
+
+      // Delete from AsyncStorage
+      const updatedItems = await deleteFoodItem(selectedFood.id);
+
+      // Update inventory immediately
+      setFoodItems(updatedItems);
+
+      // Close confirmation popup
+      setDeleteModalVisible(false);
+      setSelectedFood(null);
+    } catch (err) {
+      console.error("Error deleting food:", err);
+      setError("Unable to delete food. Please try again.");
+      setDeleteModalVisible(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Food Inventory 🥬</Text>
+
           <Text style={styles.subtitle}>
             Manage all your food items in one place.
           </Text>
@@ -140,7 +189,7 @@ export default function InventoryScreen() {
           />
         </View>
 
-        {/* Categories */}
+        {/* Category Filter */}
         <Text style={styles.sectionTitle}>Categories</Text>
 
         <ScrollView
@@ -176,7 +225,7 @@ export default function InventoryScreen() {
           <Text style={styles.itemCount}>{filteredItems.length} items</Text>
         </View>
 
-        {/* Loading */}
+        {/* Loading State */}
         {loading ? (
           <ActivityIndicator
             size="large"
@@ -188,7 +237,7 @@ export default function InventoryScreen() {
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : filteredItems.length > 0 ? (
-          // Saved Food Items
+          // Display food items
           filteredItems.map((item) => (
             <View key={item.id} style={styles.foodCard}>
               {/* Food Icon */}
@@ -210,9 +259,34 @@ export default function InventoryScreen() {
                   Expiry: {formatDate(item.expiryDate)}
                 </Text>
               </View>
+
+              {/* Action Buttons */}
+              <View style={styles.actionContainer}>
+                {/* Edit Button */}
+                <Pressable
+                  style={styles.editButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/edit-food",
+                      params: { id: item.id },
+                    })
+                  }
+                >
+                  <Text style={styles.editButtonText}>✏️ Edit</Text>
+                </Pressable>
+
+                {/* Delete Button */}
+                <Pressable
+                  style={styles.deleteButton}
+                  onPress={() => handleDeletePress(item)}
+                >
+                  <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
+                </Pressable>
+              </View>
             </View>
           ))
         ) : (
+          // Empty State
           <View style={styles.emptyCard}>
             <Text style={styles.emptyIcon}>🛒</Text>
 
@@ -230,6 +304,56 @@ export default function InventoryScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelDelete}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalIcon}>🗑️</Text>
+
+            <Text style={styles.modalTitle}>Delete Food Item?</Text>
+
+            <Text style={styles.modalMessage}>
+              Are you sure you want to delete{" "}
+              <Text style={styles.modalFoodName}>{selectedFood?.name}</Text>?
+            </Text>
+
+            <Text style={styles.modalWarning}>
+              This action cannot be undone.
+            </Text>
+
+            <View style={styles.modalActions}>
+              {/* Cancel */}
+              <Pressable
+                style={styles.cancelButton}
+                onPress={handleCancelDelete}
+                disabled={deleting}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Pressable>
+
+              {/* Confirm Delete */}
+              <Pressable
+                style={[
+                  styles.confirmDeleteButton,
+                  deleting && { opacity: 0.6 },
+                ]}
+                onPress={handleConfirmDelete}
+                disabled={deleting}
+              >
+                <Text style={styles.confirmDeleteText}>
+                  {deleting ? "Deleting..." : "Delete"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -393,9 +517,38 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 
-  itemCount: {
-    color: "#71816D",
-    fontSize: 13,
+  actionContainer: {
+    flexDirection: "column",
+    gap: 8,
+    marginLeft: 8,
+  },
+
+  editButton: {
+    backgroundColor: "#E3F0E3",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  editButtonText: {
+    color: "#245C36",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+
+  deleteButton: {
+    backgroundColor: "#FDE8E8",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  deleteButtonText: {
+    color: "#B42318",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 
   loader: {
@@ -431,5 +584,86 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#B42318",
     fontSize: 14,
+  },
+
+  // Confirmation Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+
+  modalCard: {
+    backgroundColor: "#FFFFFF",
+    width: "100%",
+    maxWidth: 380,
+    padding: 25,
+    borderRadius: 20,
+    alignItems: "center",
+  },
+
+  modalIcon: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+
+  modalTitle: {
+    fontSize: 21,
+    fontWeight: "bold",
+    color: "#245C36",
+    marginBottom: 12,
+  },
+
+  modalMessage: {
+    fontSize: 14,
+    color: "#526052",
+    textAlign: "center",
+    lineHeight: 22,
+  },
+
+  modalFoodName: {
+    fontWeight: "bold",
+    color: "#245C36",
+  },
+
+  modalWarning: {
+    fontSize: 12,
+    color: "#B42318",
+    marginTop: 10,
+  },
+
+  modalActions: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 25,
+    width: "100%",
+  },
+
+  cancelButton: {
+    flex: 1,
+    backgroundColor: "#EDF1EA",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  cancelButtonText: {
+    color: "#526052",
+    fontWeight: "bold",
+  },
+
+  confirmDeleteButton: {
+    flex: 1,
+    backgroundColor: "#C93636",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  confirmDeleteText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
 });

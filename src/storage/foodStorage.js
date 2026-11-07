@@ -29,3 +29,37 @@ export const addFoodItem = async (newFood) => {
     throw error;
   }
 };
+
+// Update an existing food item
+export const updateFoodItem = async (updatedFood) => {
+  try {
+    const existingItems = await getFoodItems();
+
+    const updatedItems = existingItems.map((item) =>
+      item.id === updatedFood.id ? updatedFood : item,
+    );
+
+    await AsyncStorage.setItem(FOOD_STORAGE_KEY, JSON.stringify(updatedItems));
+
+    return updatedItems;
+  } catch (error) {
+    console.error("Error updating food item:", error);
+    throw error;
+  }
+};
+
+// Delete a food item
+export const deleteFoodItem = async (foodId) => {
+  try {
+    const existingItems = await getFoodItems();
+
+    const updatedItems = existingItems.filter((item) => item.id !== foodId);
+
+    await AsyncStorage.setItem(FOOD_STORAGE_KEY, JSON.stringify(updatedItems));
+
+    return updatedItems;
+  } catch (error) {
+    console.error("Error deleting food item:", error);
+    throw error;
+  }
+};
