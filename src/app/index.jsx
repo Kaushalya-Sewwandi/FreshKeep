@@ -1,6 +1,8 @@
 
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   return (
@@ -25,6 +27,14 @@ export default function HomeScreen() {
             Keep track of your food and reduce waste.
           </Text>
         </View>
+
+        <Link href="/inventory" asChild>
+         <Pressable style={styles.inventoryButton}>
+        <Text style={styles.inventoryButtonText}>
+          View Food Inventory →
+        </Text>
+        </Pressable>
+        </Link>
 
         {/* Summary */}
         <Text style={styles.sectionTitle}>Food Overview</Text>
@@ -175,4 +185,19 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
+
+  inventoryButton: {
+  backgroundColor: '#286B40',
+  marginHorizontal: 20,
+  marginTop: 5,
+  padding: 15,
+  borderRadius: 12,
+  alignItems: 'center',
+},
+
+inventoryButtonText: {
+  color: '#FFFFFF',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
 });
