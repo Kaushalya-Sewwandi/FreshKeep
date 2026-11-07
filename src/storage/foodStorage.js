@@ -63,3 +63,41 @@ export const deleteFoodItem = async (foodId) => {
     throw error;
   }
 };
+
+// Mark a food item as consumed
+export const markFoodAsConsumed = async (foodId) => {
+  try {
+    const existingItems = await getFoodItems();
+
+    // Check whether the food item exists
+    const selectedFood = existingItems.find((item) => item.id === foodId);
+
+    if (!selectedFood) {
+      throw new Error("Food item not found");
+    }
+
+    // Avoid marking an already consumed item again
+    if (selectedFood.status === "Consumed") {
+      return existingItems;
+    }
+
+    // Update only the selected food item
+    const updatedItems = existingItems.map((item) =>
+      item.id === foodId
+        ? {
+            ...item,
+            status: "Consumed",
+            consumedDate: new Date().toISOString(),
+          }
+        : item,
+    );
+
+    // Save updated items
+    await AsyncStorage.setItem(FOOD_STORAGE_KEY, JSON.stringify(updatedItems));
+
+    return updatedItems;
+  } catch (error) {
+    console.error("Error marking food as consumed:", error);
+    throw error;
+  }
+};

@@ -13,7 +13,11 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { deleteFoodItem, getFoodItems } from "../storage/foodStorage";
+import {
+  deleteFoodItem,
+  getFoodItems,
+  markFoodAsConsumed,
+} from "../storage/foodStorage";
 
 import { getExpiryStatus } from "../utils/expiryUtils";
 
@@ -60,6 +64,10 @@ const statusColors = {
     background: "#ECECEC",
     text: "#666666",
   },
+  Consumed: {
+    background: "#E1F1FF",
+    text: "#205B88",
+  },
 };
 
 export default function InventoryScreen() {
@@ -76,6 +84,7 @@ export default function InventoryScreen() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [consumingId, setConsumingId] = useState(null);
 
   // Reload items when returning to Inventory
   useFocusEffect(
@@ -124,6 +133,23 @@ export default function InventoryScreen() {
 
     return matchesSearch && matchesCategory;
   });
+
+  // Mark the selected food item as consumed and refresh the list
+  const handleMarkConsumed = async (item) => {
+    if (consumingId !== null || item.status === "Consumed") return;
+
+    try {
+      setConsumingId(item.id);
+      setError("");
+      const updatedItems = await markFoodAsConsumed(item.id);
+      setFoodItems(updatedItems);
+    } catch (err) {
+      console.error("Error marking food as consumed:", err);
+      setError("Unable to mark food as consumed. Please try again.");
+    } finally {
+      setConsumingId(null);
+    }
+  };
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -261,7 +287,10 @@ export default function InventoryScreen() {
         ) : filteredItems.length > 0 ? (
           // Display saved food items
           filteredItems.map((item) => {
-            const status = getExpiryStatus(item.expiryDate);
+            const isConsumed = item.status === "Consumed";
+            const status = isConsumed
+              ? "Consumed"
+              : getExpiryStatus(item.expiryDate);
             const colors = statusColors[status] || statusColors.Unknown;
 
             return (
@@ -319,6 +348,25 @@ export default function InventoryScreen() {
                     onPress={() => handleDeletePress(item)}
                   >
                     <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
+                  </Pressable>
+
+                  {/* Mark as Consumed Button */}
+                  <Pressable
+                    style={[
+                      styles.consumeButton,
+                      (isConsumed || consumingId !== null) &&
+                        styles.disabledButton,
+                    ]}
+                    onPress={() => handleMarkConsumed(item)}
+                    disabled={isConsumed || consumingId !== null}
+                  >
+                    <Text style={styles.consumeButtonText}>
+                      {isConsumed
+                        ? "✓ Consumed"
+                        : consumingId === item.id
+                          ? "Saving..."
+                          : "✓ Mark Consumed"}
+                    </Text>
                   </Pressable>
                 </View>
               </View>
@@ -602,6 +650,25 @@ const styles = StyleSheet.create({
     color: "#B42318",
     fontSize: 12,
     fontWeight: "bold",
+  },
+
+  consumeButton: {
+    backgroundColor: "#DCECFB",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  consumeButtonText: {
+    color: "#205B88",
+    fontSize: 11,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  disabledButton: {
+    opacity: 0.55,
   },
 
   loader: {

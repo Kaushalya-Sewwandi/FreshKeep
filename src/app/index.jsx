@@ -47,6 +47,10 @@ const statusColors = {
     background: "#ECECEC",
     text: "#666666",
   },
+  Consumed: {
+    background: "#E8EAF6",
+    text: "#3949AB",
+  },
 };
 
 export default function HomeScreen() {
@@ -90,20 +94,23 @@ export default function HomeScreen() {
     }, []),
   );
 
-  // Calculate dashboard statistics
-  const totalItems = foodItems.length;
+  // Exclude consumed items from active inventory statistics
+  const activeItems = foodItems.filter((item) => item.status !== "Consumed");
+  const totalItems = activeItems.length;
+  const consumedItems = foodItems.filter(
+    (item) => item.status === "Consumed",
+  ).length;
 
-  const freshItems = foodItems.filter(
+  const freshItems = activeItems.filter(
     (item) => getExpiryStatus(item.expiryDate) === "Fresh",
   ).length;
 
-  const expiringSoonItems = foodItems.filter((item) => {
+  const expiringSoonItems = activeItems.filter((item) => {
     const status = getExpiryStatus(item.expiryDate);
-
     return status === "Expiring Soon" || status === "Expires Today";
   }).length;
 
-  const expiredItems = foodItems.filter(
+  const expiredItems = activeItems.filter(
     (item) => getExpiryStatus(item.expiryDate) === "Expired",
   ).length;
 
@@ -203,6 +210,15 @@ export default function HomeScreen() {
               </View>
             </View>
 
+            {/* Third Row: Consumed count */}
+            <View style={styles.statsContainer}>
+              <View style={styles.statCard}>
+                <Text style={styles.statIcon}>✅</Text>
+                <Text style={styles.statNumber}>{consumedItems}</Text>
+                <Text style={styles.statLabel}>Consumed Items</Text>
+              </View>
+            </View>
+
             {/* Recent Food Items */}
             <Text style={styles.sectionTitle}>Recent Food Items</Text>
 
@@ -218,7 +234,10 @@ export default function HomeScreen() {
               </View>
             ) : (
               recentItems.map((item) => {
-                const status = getExpiryStatus(item.expiryDate);
+                const status =
+                  item.status === "Consumed"
+                    ? "Consumed"
+                    : getExpiryStatus(item.expiryDate);
                 const colors = statusColors[status] || statusColors.Unknown;
 
                 return (
