@@ -209,6 +209,12 @@ export default function InventoryScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => router.replace("/")}
+          >
+            <Text style={styles.backButtonText}>← Back to Dashboard</Text>
+          </Pressable>
           <Text style={styles.title}>Food Inventory 🥬</Text>
 
           <Text style={styles.subtitle}>
@@ -784,6 +790,17 @@ const styles = StyleSheet.create({
 
   confirmDeleteText: {
     color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    marginBottom: 18,
+    paddingVertical: 8,
+  },
+
+  backButtonText: {
+    color: "#286B40",
+    fontSize: 15,
     fontWeight: "bold",
   },
 });

@@ -165,6 +165,13 @@ export default function HomeScreen() {
           </Pressable>
         </Link>
 
+        {/* Expiry Alerts Navigation */}
+        <Link href="/expiry-alerts" asChild>
+          <Pressable style={styles.alertButton}>
+            <Text style={styles.alertButtonText}>🔔 View Expiry Alerts →</Text>
+          </Pressable>
+        </Link>
+
         {/* Summary */}
         <Text style={styles.sectionTitle}>Food Overview</Text>
 
@@ -491,5 +498,19 @@ const styles = StyleSheet.create({
     color: "#B42318",
     fontSize: 14,
     textAlign: "center",
+  },
+  alertButton: {
+    backgroundColor: "#FFF1D6",
+    marginHorizontal: 20,
+    marginTop: 10,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  alertButtonText: {
+    color: "#A66A00",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
