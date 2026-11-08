@@ -17,9 +17,9 @@ import {
   deleteFoodItem,
   getFoodItems,
   markFoodAsConsumed,
-} from "../storage/foodStorage";
+} from "../../storage/foodStorage";
 
-import { getExpiryStatus } from "../utils/expiryUtils";
+import { getExpiryStatus } from "../../utils/expiryUtils";
 
 // Food category icons
 const categoryIcons = {

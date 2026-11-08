@@ -11,8 +11,8 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { getFoodItems } from "../storage/foodStorage";
-import { getExpiryStatus } from "../utils/expiryUtils";
+import { getFoodItems } from "../../storage/foodStorage";
+import { getExpiryStatus } from "../../utils/expiryUtils";
 
 const categories = ["Fruits", "Vegetables", "Dairy", "Bakery", "Meat", "Other"];
 
@@ -525,3 +525,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+

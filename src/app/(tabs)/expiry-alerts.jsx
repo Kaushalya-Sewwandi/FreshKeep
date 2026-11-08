@@ -1,18 +1,18 @@
 import { useCallback, useState } from "react";
 import {
-    ActivityIndicator,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { getFoodItems } from "../storage/foodStorage";
-import { getExpiryStatus } from "../utils/expiryUtils";
+import { getFoodItems } from "../../storage/foodStorage";
+import { getExpiryStatus } from "../../utils/expiryUtils";
 
 const categoryIcons = {
   Fruits: "🍎",
