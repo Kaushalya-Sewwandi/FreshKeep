@@ -165,6 +165,15 @@ export default function HomeScreen() {
           </Pressable>
         </Link>
 
+        {/* Reports & Insights Navigation */}
+        <Link href="/reports" asChild>
+          <Pressable style={styles.reportsButton}>
+            <Text style={styles.reportsButtonText}>
+              📊 View Reports & Insights →
+            </Text>
+          </Pressable>
+        </Link>
+
         {/* Expiry Alerts Navigation */}
         <Link href="/expiry-alerts" asChild>
           <Pressable style={styles.alertButton}>
@@ -510,6 +519,21 @@ const styles = StyleSheet.create({
 
   alertButtonText: {
     color: "#A66A00",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  reportsButton: {
+    backgroundColor: "#E3F0E3",
+    marginHorizontal: 20,
+    marginTop: 10,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  reportsButtonText: {
+    color: "#245C36",
     fontSize: 16,
     fontWeight: "bold",
   },
