@@ -1,56 +1,214 @@
-# Welcome to your Expo app 👋
+# 🥬 FreshKeep – Smart Food Inventory & Expiry Management App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+FreshKeep is a React Native mobile application designed to help users manage their food inventory, monitor expiration dates, and reduce food waste.
 
-## Get started
+The application provides an easy-to-use interface for adding, editing, deleting, and tracking food items. It also includes expiry alerts, food consumption tracking, and reports to help users manage their food efficiently.
 
-1. Install dependencies
+## 📱 Features
 
-   ```bash
-   npm install
-   ```
+### 1. Dashboard
 
-2. Start the app
+- Displays an overview of food inventory.
+- Shows total active, fresh, expiring, expired, and consumed food items.
+- Displays recently added food items.
+- Provides quick navigation to other screens.
 
-   ```bash
-   npx expo start
-   ```
+### 2. Food Inventory Management
 
-In the output, you'll find options to open the app in a
+- View all saved food items.
+- Search food items by name.
+- Filter food items by category.
+- View food quantities, expiry dates, and statuses.
+- Edit and delete existing food items.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 3. Add and Edit Food
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Add new food items with relevant details.
+- Enter food name, category, quantity, purchase date, expiry date, and notes.
+- Update previously saved food items.
+- Validate food details before saving.
 
-## Get a fresh project
+### 4. Expiry Tracking and Alerts
 
-When you're ready, run:
+- Automatically calculate food expiry status.
+- Categorize food items as:
+  - Fresh
+  - Expiring Soon
+  - Expires Today
+  - Expired
+- Display expiry alerts based on food expiration dates.
+- Exclude consumed items from expiry alerts.
 
-```bash
-npm run reset-project
+### 5. Food Consumption Tracking
+
+- Mark food items as consumed.
+- Maintain consumed food records.
+- Prevent already consumed items from being marked again.
+- Update Dashboard and Reports statistics.
+
+### 6. Reports and Analytics
+
+- Display total added, active, consumed, and expired food counts.
+- Show food consumption and expiry percentages.
+- Display category-wise food distribution.
+- Provide consumed food history.
+
+### 7. Bottom Tab Navigation
+
+Navigate between four main sections:
+
+- Home
+- Inventory
+- Alerts
+- Reports
+
+### 8. Local Data Storage
+
+- Store food inventory data using AsyncStorage.
+- Preserve saved food items after restarting or refreshing the application.
+- Perform inventory management without requiring a backend server.
+
+## 🛠️ Technologies Used
+
+| Technology        | Purpose                        |
+| ----------------- | ------------------------------ |
+| React Native      | Mobile application development |
+| Expo              | Development and testing        |
+| Expo Router       | Navigation and routing         |
+| JavaScript / JSX  | Application development        |
+| AsyncStorage      | Local data persistence         |
+| React Hooks       | State management               |
+| Expo Vector Icons | Navigation icons               |
+| Git & GitHub      | Version control                |
+
+## 📂 Project Structure
+
+```text
+FreshKeep/
+├── assets/
+├── src/
+│   ├── app/
+│   │   ├── (tabs)/
+│   │   │   ├── _layout.jsx
+│   │   │   ├── index.jsx
+│   │   │   ├── inventory.jsx
+│   │   │   ├── expiry-alerts.jsx
+│   │   │   └── reports.jsx
+│   │   ├── _layout.jsx
+│   │   ├── add-food.jsx
+│   │   └── edit-food.jsx
+│   ├── storage/
+│   │   └── foodStorage.js
+│   └── utils/
+│       └── expiryUtils.js
+├── package.json
+└── README.md
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## 🚀 Installation and Setup
 
-### Other setup steps
+### Prerequisites
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Make sure the following tools are installed:
 
-## Learn more
+- Node.js
+- npm
+- Visual Studio Code
+- Git
+- Expo Go (optional, for mobile testing)
 
-To learn more about developing your project with Expo, look at the following resources:
+### Step 1 – Clone the Repository
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+git clone https://github.com/Kaushalya-Sewwandi/FreshKeep.git
+```
 
-## Join the community
+### Step 2 – Navigate to the Project Directory
 
-Join our community of developers creating universal apps.
+```bash
+cd FreshKeep
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Step 3 – Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 4 – Start the Application
+
+```bash
+npx expo start
+```
+
+### Step 5 – Run on Web
+
+```bash
+npx expo start --web
+```
+
+Alternatively, use Expo Go to run the application on a compatible mobile device.
+
+## 🧪 Testing
+
+The application was manually tested to verify its main functionalities.
+
+| Test Case ID | Test Scenario                        | Result |
+| ------------ | ------------------------------------ | ------ |
+| TC-01        | Add Food and Dashboard Update        | PASS   |
+| TC-02        | Edit Food                            | PASS   |
+| TC-03        | Mark Food as Consumed                | PASS   |
+| TC-04        | Delete Food                          | PASS   |
+| TC-05        | Expiry Alerts and Status Calculation | PASS   |
+| TC-06        | Reports and Analytics                | PASS   |
+| TC-07        | Navigation and Data Persistence      | PASS   |
+
+**Testing Summary**
+
+- Total Test Cases: 7
+- Passed: 7
+- Failed: 0
+- Pass Rate: 100%
+
+Testing was performed using the Expo web development environment. Android device testing and production build validation are not included in these results.
+
+## 📸 Application Screenshots
+
+Screenshots of the application can be added here.
+
+Suggested screenshots:
+
+- Dashboard
+- Food Inventory
+- Add Food
+- Edit Food
+- Expiry Alerts
+- Reports and Analytics
+
+## 🔮 Future Enhancements
+
+The following features may be added in future versions:
+
+- Push notifications for upcoming food expiration dates.
+- Barcode scanning for faster food entry.
+- Food image upload.
+- Cloud database synchronization.
+- User authentication.
+- Shopping list management.
+- AI-powered food recommendations.
+
+## 🎯 Project Objective
+
+The main objective of FreshKeep is to provide a simple and effective solution for managing household food inventory, tracking expiration dates, and encouraging better food consumption habits to minimize food waste.
+
+## 👩‍💻 Developer
+
+**Kaushalya Sewwandi**
+
+GitHub: [Kaushalya-Sewwandi](https://github.com/Kaushalya-Sewwandi)
+
+Project Repository: [FreshKeep](https://github.com/Kaushalya-Sewwandi/FreshKeep)
+
+## 📄 License
+
+This project was developed for educational purposes.
