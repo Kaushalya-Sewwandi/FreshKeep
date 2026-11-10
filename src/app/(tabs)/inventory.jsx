@@ -213,7 +213,7 @@ export default function InventoryScreen() {
             style={styles.backButton}
             onPress={() => router.replace("/")}
           >
-            <Text style={styles.backButtonText}>← Back to Dashboard</Text>
+            <Text style={styles.backButtonText}>← Back </Text>
           </Pressable>
           <Text style={styles.title}>Food Inventory 🥬</Text>
 
