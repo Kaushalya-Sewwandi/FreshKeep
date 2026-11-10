@@ -176,27 +176,27 @@ Testing was performed using the Expo web development environment. Android device
 
 ### Dashboard
 
-![FreshKeep Dashboard](screenshots/dashboard.jpg)
+![FreshKeep Dashboard](screenshots/dashboard.jpeg)
 
 ### Food Inventory
 
-![Food Inventory](screenshots/inventory.jpg)
+![Food Inventory](screenshots/inventory.jpeg)
 
 ### Add Food
 
-![Add Food Screen](screenshots/add-food.jpg)
+![Add Food Screen](screenshots/add-food.jpeg)
 
 ### Edit Food
 
-![Edit Food Screen](screenshots/edit-food.jpgg)
+![Edit Food Screen](screenshots/edit-food.jpeg)
 
 ### Expiry Alerts
 
-![Expiry Alerts](screenshots/expiry-alerts.jpg)
+![Expiry Alerts](screenshots/expiry-alerts.jpeg)
 
 ### Reports and Analytics
 
-![Reports and Analytics](screenshots/reports.jpg)
+![Reports and Analytics](screenshots/reports.jpeg)
 
 ## 🔮 Future Enhancements
 
