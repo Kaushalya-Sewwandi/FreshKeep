@@ -174,16 +174,29 @@ Testing was performed using the Expo web development environment. Android device
 
 ## 📸 Application Screenshots
 
-Screenshots of the application can be added here.
+### Dashboard
 
-Suggested screenshots:
+![FreshKeep Dashboard](screenshots/dashboard.jpg)
 
-- Dashboard
-- Food Inventory
-- Add Food
-- Edit Food
-- Expiry Alerts
-- Reports and Analytics
+### Food Inventory
+
+![Food Inventory](screenshots/inventory.jpg)
+
+### Add Food
+
+![Add Food Screen](screenshots/add-food.jpg)
+
+### Edit Food
+
+![Edit Food Screen](screenshots/edit-food.jpgg)
+
+### Expiry Alerts
+
+![Expiry Alerts](screenshots/expiry-alerts.jpg)
+
+### Reports and Analytics
+
+![Reports and Analytics](screenshots/reports.jpg)
 
 ## 🔮 Future Enhancements
 
