@@ -184,11 +184,11 @@ Testing was performed using the Expo web development environment. Android device
 
 ### Add Food
 
-![Add Food Screen](screenshots/add-food.jpeg)
+![Add Food Screen](screenshots/add-food.jpeg?v=2)
 
 ### Edit Food
 
-![Edit Food Screen](screenshots/edit-food.jpeg)
+![Edit Food Screen](screenshots/edit-food.jpeg?v=2)
 
 ### Expiry Alerts
 
